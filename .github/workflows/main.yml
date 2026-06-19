@@ -27,7 +27,6 @@ jobs:
         export PATH=~/bin:$PATH
         mkdir twrp
         cd twrp
-        # twrp-11 ব্রাঞ্চ ব্যবহার করা হচ্ছে কারণ twrp-10 বিদ্যমান নেই
         repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-11
         repo sync -j$(nproc) --force-sync
 
@@ -40,6 +39,8 @@ jobs:
       run: |
         export PATH=~/bin:$PATH
         cd twrp
+        # Omni কনফিগারেশন যোগ করা হচ্ছে যেন এরর না আসে
+        git clone https://github.com/minimal-manifest-twrp/platform_build -b twrp-11 build
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         lunch omni_noah-eng
