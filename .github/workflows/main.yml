@@ -1,0 +1,57 @@
+name: Recovery Builder (Android 10 Tree)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Cleanup Environment
+      run: |
+        sudo apt-get purge changelog-modators google-chrome-stable microsoft-edge-stable mono-devel
+        sudo apt-get autoremove --purge
+        sudo apt-get clean
+
+    - name: Set up Build Environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
+    - name: Install Repo Tool
+      run: |
+        mkdir ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        export PATH=~/bin:$PATH
+
+    - name: Sync TWRP 10.0 Source
+      run: |
+        PATH=~/bin:$PATH
+        mkdir twrp
+        cd twrp
+        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-10
+        repo sync -j$(nproc) --force-sync
+
+    - name: Clone Device Tree (Android 10)
+      run: |
+        cd twrp
+        git clone https://github.com/imjyotiraditya/device_realme_noah-twrp -b android-10 device/realme/noah
+
+    - name: Building Recovery
+      run: |
+        cd twrp
+        export ALLOW_MISSING_DEPENDENCIES=true
+        source build/envsetup.sh
+        lunch omni_noah-eng
+        make recoveryimage -j$(nproc)
+
+    - name: Upload Recovery
+      uses: actions/upload-artifact@v4
+      with:
+        name: TWRP-Noah-Android10
+        path: twrp/out/target/product/noah/recovery.img
