@@ -27,14 +27,19 @@ jobs:
         export PATH=~/bin:$PATH
         mkdir twrp
         cd twrp
-        # এখানে omni মেনিফেস্ট ব্যবহার করা হচ্ছে যাতে ভেন্ডর ফাইলগুলো অটোমেটিক চলে আসে
-        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-11
+        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-11
         repo sync -j$(nproc) --force-sync
 
     - name: Clone Device Tree
       run: |
         cd twrp
         git clone https://github.com/imjyotiraditya/device_realme_noah-twrp -b android-10 device/realme/noah
+
+    - name: Prepare Vendor
+      run: |
+        cd twrp
+        # ম্যানুয়ালি ভেন্ডর ফোল্ডার ক্লোন করা হচ্ছে যাতে বিল্ড এরর না হয়
+        git clone https://github.com/minimal-manifest-twrp/platform_vendor_omni -b twrp-11 vendor/omni
 
     - name: Building Recovery
       run: |
