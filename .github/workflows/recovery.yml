@@ -39,15 +39,18 @@ jobs:
       run: |
         export PATH=~/bin:$PATH
         cd twrp
-        # বিল্ড এনভায়রনমেন্ট লোড করা
+        # vendor/omni ডিরেক্টরি নিশ্চিত করা
+        mkdir -p vendor/omni
+        
+        # বিল্ড এনভায়রনমেন্ট সেটআপ
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
         
-        # ডিভাইস কনফিগারেশন সিলেক্ট করা
+        # ডিভাইস কনফিগারেশন লোড করা
         lunch omni_noah-eng
         
-        # বিল্ড শুরু করা (mka ব্যবহার করে)
+        # বিল্ড শুরু করা
         mka recoveryimage -j$(nproc)
 
     - name: Upload Recovery
