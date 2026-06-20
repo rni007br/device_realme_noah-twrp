@@ -1,4 +1,4 @@
-name: Recovery Builder (Android 11 Tree)
+name: Recovery Builder
 
 on:
   workflow_dispatch:
@@ -39,19 +39,17 @@ jobs:
       run: |
         export PATH=~/bin:$PATH
         cd twrp
-        # বিল্ড ডিরেক্টরি থাকলে তা সরিয়ে ফেলা হচ্ছে
-        rm -rf build
-        git clone https://github.com/minimal-manifest-twrp/platform_build -b twrp-11 build
-        
+        # বিল্ড করার জন্য প্রয়োজনীয় পরিবেশ সেটআপ
         make clobber
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         export LC_ALL=C
         lunch omni_noah-eng
+        # অক্টা-কোর প্রসেসরের জন্য সর্বোচ্চ পাওয়ার ব্যবহার
         mka -j$(nproc) recoveryimage
 
     - name: Upload Recovery
       uses: actions/upload-artifact@v4
       with:
-        name: TWRP-Noah-Android11
+        name: TWRP-Noah-Recovery
         path: twrp/out/target/product/noah/recovery.img
