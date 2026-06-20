@@ -39,14 +39,16 @@ jobs:
       run: |
         export PATH=~/bin:$PATH
         cd twrp
-        # বিল্ড করার জন্য প্রয়োজনীয় পরিবেশ সেটআপ
-        make clobber
-        export ALLOW_MISSING_DEPENDENCIES=true
+        # বিল্ড এনভায়রনমেন্ট লোড করা
         source build/envsetup.sh
+        export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
+        
+        # ডিভাইস কনফিগারেশন সিলেক্ট করা
         lunch omni_noah-eng
-        # অক্টা-কোর প্রসেসরের জন্য সর্বোচ্চ পাওয়ার ব্যবহার
-        mka -j$(nproc) recoveryimage
+        
+        # বিল্ড শুরু করা (mka ব্যবহার করে)
+        mka recoveryimage -j$(nproc)
 
     - name: Upload Recovery
       uses: actions/upload-artifact@v4
