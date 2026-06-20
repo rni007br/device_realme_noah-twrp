@@ -27,7 +27,8 @@ jobs:
         export PATH=~/bin:$PATH
         mkdir twrp
         cd twrp
-        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-11
+        # এখানে omni মেনিফেস্ট ব্যবহার করা হচ্ছে যাতে ভেন্ডর ফাইলগুলো অটোমেটিক চলে আসে
+        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-11
         repo sync -j$(nproc) --force-sync
 
     - name: Clone Device Tree
@@ -39,18 +40,10 @@ jobs:
       run: |
         export PATH=~/bin:$PATH
         cd twrp
-        # vendor/omni ডিরেক্টরি নিশ্চিত করা
-        mkdir -p vendor/omni
-        
-        # বিল্ড এনভায়রনমেন্ট সেটআপ
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL=C
-        
-        # ডিভাইস কনফিগারেশন লোড করা
         lunch omni_noah-eng
-        
-        # বিল্ড শুরু করা
         mka recoveryimage -j$(nproc)
 
     - name: Upload Recovery
